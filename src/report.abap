@@ -1,7 +1,7 @@
 *&---------------------------------------------------------------------*
 *& Report ZR_SEL_SIMPLE
 *&---------------------------------------------------------------------*
-*& Description: Program to demonstrate easy handling of complex Selection 
+*& Description: Program to demonstrate easy handling of complex Selection
 *&      Screen
 *&---------------------------------------------------------------------*
 *& Author: Namasivaym Mani
@@ -11,7 +11,7 @@ REPORT zr_sel_simple.
 
 TYPES:
   BEGIN OF gty_scn_field_auth,
-    excel_upd   type boolean,
+    excel_upd   TYPE boolean,
     display_del TYPE boolean,
     execute     TYPE boolean,
   END OF gty_scn_field_auth.
@@ -86,7 +86,16 @@ INITIALIZATION.
 AT SELECTION-SCREEN OUTPUT.
   PERFORM modify_screen.
 
+START-OF-SELECTION.
+  PERFORM start_program_execution.
+
 FORM check_auth.
+
+**********************************************************************
+** for demonstration purpose I have set the values manually
+** in real program you must have set the fields using
+** AUTHORITY CHECK object, if the user has authorization
+**********************************************************************
 
 *  gs_scn_field_auth-excel_upd = abap_true.
   gs_scn_field_auth-display_del = abap_true.
@@ -175,5 +184,50 @@ FORM modify_screen.
       ENDIF.
     ENDIF.
   ENDLOOP.
+
+ENDFORM.
+
+FORM start_program_execution.
+
+
+*  checking for which radion button has been selected
+  CASE abap_true.
+
+    WHEN r_s_mstr. "Table Maintence
+
+      CASE abap_true.
+        WHEN r_s_upd. "Excel Upload
+          MESSAGE 'Excel Upload Selected' TYPE 'I'.
+        WHEN r_s_dsp. "table display/delete
+          MESSAGE 'Table Display/Delete Selected' TYPE 'I'.
+      ENDCASE.
+
+    WHEN r_log_rp. "SNP Log and Deployment
+
+      CASE abap_true.
+        WHEN r_snplog. "snp optimizer log data
+          CASE abap_true.
+            WHEN r_gnrt  .
+              MESSAGE 'SNP Log: Generate Data Selected' TYPE 'I'.
+            WHEN r_dp_bas.
+              MESSAGE 'SNP Log: Base Data Display Selected' TYPE 'I'.
+            WHEN r_dp_r  .
+              MESSAGE 'SNP Log: Region Display Selected' TYPE 'I'.
+            WHEN r_dp_tzn.
+              MESSAGE 'SNP Log: Transportation Zone Display Selected' TYPE 'I'.
+          ENDCASE.
+        WHEN r_deploy. "deployment data
+          CASE abap_true.
+            WHEN r_gnrt  .
+              MESSAGE 'Deployment: Generate Data Selected' TYPE 'I'.
+            WHEN r_dp_bas.
+              MESSAGE 'Deployment: Base Data Display Selected' TYPE 'I'.
+            WHEN r_dp_r  .
+              MESSAGE 'Deployment: Region Display Selected' TYPE 'I'.
+            WHEN r_dp_tzn.
+              MESSAGE 'Deployment: Transportation Zone Display Selected' TYPE 'I'.
+          ENDCASE.
+      ENDCASE.
+  ENDCASE.
 
 ENDFORM.
