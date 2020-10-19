@@ -10,6 +10,7 @@
 REPORT zr_sel_simple.
 
 TYPES:
+*  structure for holding authorization data
   BEGIN OF gty_scn_field_auth,
     excel_upd   TYPE boolean,
     display_del TYPE boolean,
@@ -81,12 +82,16 @@ SELECTION-SCREEN END OF BLOCK b6.
 INITIALIZATION.
   btn_guid = 'Excel File Guidence' .
   btn_frmt = 'Download File Format'.
+*  checking authorizaton
   PERFORM check_auth.
 
 AT SELECTION-SCREEN OUTPUT.
+*  selection screen modification based on selected
+*  radio button
   PERFORM modify_screen.
 
 START-OF-SELECTION.
+*  main program logic execution
   PERFORM start_program_execution.
 
 FORM check_auth.
@@ -106,30 +111,32 @@ ENDFORM.
 FORM modify_screen.
 
   DATA:
-*    variable to hold list of modif ids to be visible for selected ratio button
+*    radio button selection variable: to hold list of modif ids to be visible
+*     for selected ratio button
     lv_selected        TYPE string,
-*    variable to hold list of modif ids for not authorized fields
+
+*    radio button selection variable: variable to hold list of modif ids
+*     for not authorized fields
     lv_auth            TYPE string,
 
-*    radio button: table maintenance
+*    radio button selection variable: table maintenance
     lv_r_tab_maint     TYPE string VALUE 'R3,R4,R5,M1,M2,M5,M4',
 
-*    radio button: excel upload
+*    radio button selection variable: excel upload
     lv_r_tab_maint_upd TYPE string VALUE 'M3',
 
-*    radio button: table display/delete
+*    radio button selection variable: table display/delete
     lv_r_tab_maint_dsp TYPE string VALUE 'F1',
 
-*    radio button: data source selection
+*    radio button selection variable: data source selection
     lv_r_data_src      TYPE string VALUE 'F1,R2,R6,M3,',
-*    radio button: snp optimizer log
+*    radio button selection variable: snp optimizer log
     lv_r_snplog        TYPE string VALUE 'M4,',
-*    radio button: snp deployment
+*    radio button selection variable: snp deployment
     lv_r_deployment    TYPE string VALUE 'M1,M5,'.
 
   IF gs_scn_field_auth-display_del = abap_false.
     CONCATENATE lv_auth 'R6' INTO lv_auth SEPARATED BY ','.
-*    CONCATENATE lv_auth 'R2' INTO lv_auth SEPARATED BY ','.
   ENDIF.
 
   IF gs_scn_field_auth-execute = abap_false.
@@ -189,7 +196,6 @@ ENDFORM.
 
 FORM start_program_execution.
 
-
 *  checking for which radion button has been selected
   CASE abap_true.
 
@@ -207,24 +213,24 @@ FORM start_program_execution.
       CASE abap_true.
         WHEN r_snplog. "snp optimizer log data
           CASE abap_true.
-            WHEN r_gnrt  .
+            WHEN r_gnrt. "generate report
               MESSAGE 'SNP Log: Generate Data Selected' TYPE 'I'.
-            WHEN r_dp_bas.
+            WHEN r_dp_bas. "base data display
               MESSAGE 'SNP Log: Base Data Display Selected' TYPE 'I'.
-            WHEN r_dp_r  .
+            WHEN r_dp_r. "region display
               MESSAGE 'SNP Log: Region Display Selected' TYPE 'I'.
-            WHEN r_dp_tzn.
+            WHEN r_dp_tzn. "transporation Display
               MESSAGE 'SNP Log: Transportation Zone Display Selected' TYPE 'I'.
           ENDCASE.
         WHEN r_deploy. "deployment data
           CASE abap_true.
-            WHEN r_gnrt  .
+            WHEN r_gnrt. "generate report
               MESSAGE 'Deployment: Generate Data Selected' TYPE 'I'.
-            WHEN r_dp_bas.
+            WHEN r_dp_bas. "base data display
               MESSAGE 'Deployment: Base Data Display Selected' TYPE 'I'.
-            WHEN r_dp_r  .
+            WHEN r_dp_r. "region display
               MESSAGE 'Deployment: Region Display Selected' TYPE 'I'.
-            WHEN r_dp_tzn.
+            WHEN r_dp_tzn. "transporation Display
               MESSAGE 'Deployment: Transportation Zone Display Selected' TYPE 'I'.
           ENDCASE.
       ENDCASE.
